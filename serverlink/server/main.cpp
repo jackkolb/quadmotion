@@ -9,28 +9,27 @@
 using namespace std;
 using boost::asio::ip::tcp;
 
+const int PACKET_SIZE = 64;
+
 class Connection {
     public:
         void process_command(tcp::socket&, string);
-        int MAX_PACKET_LENGTH = 64;
 };
 
 int main() {
-    // initialize service
-    boost::asio::io_service ioservice;
-
-    while (true) {
+    while (true) { // makes the server go infinitely
         try {
-            Connection session;
-            int port = 1234;
-            tcp::acceptor acceptor (ioservice, tcp::endpoint(tcp::v4(), port));
-            tcp::socket _socket(ioservice);
+            boost::asio::io_service ioservice; // initialize service
+            Connection session; // create session 
+            int port = 1234; // port we are looking on
+            tcp::acceptor acceptor (ioservice, tcp::endpoint(tcp::v4(), port)); // create acceptor mechanism
+            tcp::socket socket(ioservice); // create socket
 
-            acceptor.accept(_socket);
+            acceptor.accept(socket); // wait for a connection, redirect it to the socket
 
-            char input_buffer[64];
-            boost::asio::read(_socket, boost::asio::buffer(input_buffer, 64));
-            session.process_command(_socket, input_buffer);
+            char input_buffer[PACKET_SIZE]; // this is the receiving buffer
+            boost::asio::read(socket, boost::asio::buffer(input_buffer, 64)); // read data from the socket (blocks until buffer fills)
+            session.process_command(socket, input_buffer); // process the input
         }
         catch (exception& e) {
             cerr << "EXCEPTION: " << e.what() << endl;
