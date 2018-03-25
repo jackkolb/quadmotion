@@ -1,6 +1,5 @@
 import socket
 import sys
-
 while True:
     # Create a TCP/IP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -14,8 +13,6 @@ while True:
         # Prompt for message
         msg = raw_input('Enter a message: ')
         sock.sendall(msg)
-
-    finally:
-        print >>sys.stderr, 'closing socket'
-        sock.close()
-
+    except Exception as e:
+        continue
+    sock.close()
