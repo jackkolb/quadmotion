@@ -10,7 +10,8 @@ quadmotion_client:
 	-I $(BOOST) \
 	-L $(BOOST)/libs \
 	-l boost_system \
-	-l pthread
+	-l pthread \
+	-l ASIO_STANDALONE
 
 quadmotion_server:
 	g++ -o quadmotion_server \
