@@ -1,11 +1,20 @@
 import socket
 import sys
+import serial
 
+# Create serial port
+ser_port = "COM1"
+baud = 9600
+
+ser = serial.Serial(ser_port, baud, timeout=1)
+
+if ser.isOpen():
+    print(ser.name + 'is open...')
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Bind the socke to the port
-server_addr = ('localhost', 1234)
+server_addr = ('10.120.46.32', 1234)
 print 'starting server on %s port %s' % server_addr
 sock.bind(server_addr)
 
@@ -21,7 +30,9 @@ while True:
             print >>sys.stderr, 'connection from ', client_addr
 
             data  = connection.recv(16)
-            print >>sys.stderr, 'recieved %s' % data
+            if data:
+                ser.write(data)
+                print >>sys.stderr, 'recieved %s' % data
     finally:
         # Clean up the connection
         connection.close()
