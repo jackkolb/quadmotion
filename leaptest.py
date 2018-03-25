@@ -21,12 +21,19 @@ class MyListener(Leap.Listener):
         controller.enable_gesture(Leap.Gesture.TYPE_SCREEN_TAP);
     def on_frame(self, controller):
         frame = controller.frame()
-        print "Frame available"
+        #print "Frame available"
+    def cal_distance(vector1, vector2):
+        dist = 
 
         for gesture in frame.gestures():
             if gesture.type == Leap.Gesture.TYPE_CIRCLE:
                 circle = CircleGesture(gesture)
-                print "Circle"
+                if (circle.pointable.direction.angle_to(circle.normal) <= Leap.PI/2):
+                    clockwiseness = "clockwise"
+                else:
+                    clockwiseness = "counterclockwise"
+
+                print "Circle "+ clockwiseness
             if gesture.type == Leap.Gesture.TYPE_KEY_TAP:
                 keytap = CircleGesture(gesture)
                 print "Key Tap"
@@ -35,17 +42,20 @@ class MyListener(Leap.Listener):
                 print "Swipe"
             if gesture.type == Leap.Gesture.TYPE_SCREEN_TAP:
                 swipe = CircleGesture(gesture)
-                print "Screen Tap"
-    # need to add clock/counterwise implementation
-        if not (frame.hands.is_empty and frame.gestures().is_empty):
-            print ""
-    def state_string(self, state):
-        if state == Leap.Gesture.STATE_START:
-            return "STATE_START"
-        if state == Leap.Gesture.STATE_UPDATE:
-            return "STATE_UPDATE"
-        if state == Leap.Gesture.STATE_INVALID:
-            return "STATE_INVALID"
+                start = swipe.start_position
+                current = swipe.position
+                # direction = swipe.direction doesn't really work
+                print "Screen Tap "+direction+"!"
+                    if current - start
+        #if not (frame.hands.is_empty and frame.gestures().is_empty):
+         #   print ""
+        def state_string(self, state):
+            if state == Leap.Gesture.STATE_START:
+                return "STATE_START"
+            if state == Leap.Gesture.STATE_UPDATE:
+              return "STATE_UPDATE"
+            if state == Leap.Gesture.STATE_INVALID:
+                return "STATE_INVALID"
 
 
 def main():
