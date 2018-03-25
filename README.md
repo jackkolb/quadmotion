@@ -7,3 +7,5 @@ nvm this is way more thorough: https://cylonjs.com/documentation/platforms/ardui
 example with car: http://www.instructables.com/id/Controlling-Arduino-car-via-Leap-Motion/
 
 installing Leap on Ubuntu: https://askubuntu.com/questions/1008964/problems-installing-leap-motion-orion/1009297
+
+error fix: https://github.com/openleap/PyLeapMouse/issues/16
