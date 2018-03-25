@@ -11,10 +11,9 @@ while True:
     sock.connect(server_addr)
 
     try:
-        while sock:
-            # Prompt for message
-            msg = raw_input('Enter a message: ')
-            sock.sendall(msg)
+        # Prompt for message
+        msg = raw_input('Enter a message: ')
+        sock.sendall(msg)
 
     finally:
         print >>sys.stderr, 'closing socket'
