@@ -12,23 +12,21 @@ if ser.isOpen():
 def onNewClient(clientSock, addr):
     while True:
         try:
-            msg = clientSock.recv(1)
+            msg = clientSock.recv(2)
             if msg == '':
-                raise RuntimeError('socket connection broken')
+                clientSock.shutdown()
+                clientSock.close()
             else:
                 print 'Message recieved: %s' % msg
                 ser.write(msg)
         finally:
             clientSock.close()
-    clientSock.shutdown()
-    clientSock.close()
-
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Bind the socket to the port
-server_addr = ('10.120.46.32', 1234)
+server_addr = ('localhost', 1234)
 print 'starting server on %s port %s' % server_addr
 sock.bind(server_addr)
 
@@ -39,9 +37,7 @@ sock.listen(2)
 print 'Connection Established'
 
 while True:
-    try:
-        c, addr = s.accept()
-        thread.start_new_thread(onNewClient, (c, addr))
-    finally:
-        s.close()
-s.close()
+    c, addr = sock.accept()
+    thread.start_new_thread(onNewClient, (c, addr))
+
+sock.close()
