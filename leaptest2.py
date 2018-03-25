@@ -1,6 +1,6 @@
-import os, sys, inspect, thread, time
-import serial
-ser = serial.Serial('/dev/ttyACM0', 9600)
+import os, sys, inspect, thread, time, socket
+#import serial
+#ser = serial.Serial(, 9600)
 src_dir = os.path.dirname(inspect.getfile(inspect.currentframe()))
 
 arch_dir = '../lib/x64' if sys.maxsize > 2**32 else '../lib/x86'
@@ -10,12 +10,12 @@ sys.path.insert(0, os.path.abspath(os.path.join(src_dir, arch_dir)))
 
 import Leap
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
-
 class MyListener(Leap.Listener):
+
     def on_init(self, controller):
-        ser.write('itializing start up sequence')
+        print('itializing start up sequence')
     def on_connect(self, controller):
-        ser.write('Connected')
+        print('Connected')
 
         controller.enable_gesture(Leap.Gesture.TYPE_CIRCLE);
         controller.enable_gesture(Leap.Gesture.TYPE_KEY_TAP);
@@ -24,29 +24,30 @@ class MyListener(Leap.Listener):
     def on_frame(self, controller):
         frame = controller.frame()
         #print "Frame available"
-    def cal_distance(vector1, vector2):
+   # def cal_distance(vector1, vector2):
         # dist = 
-
+        s2_out = "x"
         for gesture in frame.gestures():
             if gesture.type == Leap.Gesture.TYPE_CIRCLE:
                 circle = CircleGesture(gesture)
                 if (circle.pointable.direction.angle_to(circle.normal) <= Leap.PI/2):
                     clockwiseness = "clockwise"
+                    s2_out = "u"
                 else:
                     clockwiseness = "counterclockwise"
-
-                ser.write('Circle '+ clockwiseness)
+                    s2_out = "d"
+                #ser.write('Circle '+ clockwiseness)
             if gesture.type == Leap.Gesture.TYPE_KEY_TAP:
                 keytap = CircleGesture(gesture)
-                ser.write('Key Tap')
+                s2_out = "b"
             if gesture.type == Leap.Gesture.TYPE_SWIPE:
                 swipe = CircleGesture(gesture)
                 start = swipe.start_position
                 current = swipe.position
                 # direction = swipe.direction doesn't really work 
-                ser.write('Swipe')
+                s2_out = "l"
             if gesture.type == Leap.Gesture.TYPE_SCREEN_TAP:
-                ser.write('Screen Tap '+direction)
+                s2_out = "f"
                     
         #if not (frame.hands.is_empty and frame.gestures().is_empty):
          #   print ""
@@ -57,15 +58,25 @@ class MyListener(Leap.Listener):
               return "STATE_UPDATE"
             if state == Leap.Gesture.STATE_INVALID:
                 return "STATE_INVALID"
-
-
+        return s2_out   
 def main():
     listener = MyListener()
     controller = Leap.Controller()
 
     controller.add_listener(listener)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    cer.write('Press Enter to quit')
+    # Connect the socket to the port where the server is listening
+    server_addr = ('10.120.46.32', 1234)
+    print >>sys.stderr, 'connection to %s port %s' % server_addr
+   # sock.connect(server_addr)
+    while True:
+    # Create a TCP/IP socket
+        sock.connect(server_addr)
+        gesture = listener.on_frame(controller)
+        sock.sendall(gesture)
+        sock.close() 
+    # cer.write('Press Enter to quit')
     try:
         sys.stdin.readline()
     except KeyboardInterrupt:
